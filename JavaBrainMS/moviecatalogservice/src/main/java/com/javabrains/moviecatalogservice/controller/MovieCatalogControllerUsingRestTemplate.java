@@ -29,11 +29,11 @@ public class MovieCatalogControllerUsingRestTemplate {
 	@GetMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
 		//get all rated movie ids
-		UserRating ratings = restTemplate.getForObject("http://localhost:8083/ratingsdata/users/"+userId, UserRating.class);
+		UserRating ratings = restTemplate.getForObject("http://rating-data-service/ratingsdata/users/"+userId, UserRating.class);
 		//for each movieId call movieinfoservice and get details
 		return ratings.getUseRrating().stream().map(rating -> {
 			//We should not return a list from an api as a root node as only object expected as we can pass Movie.class but not List. We can pass PrameterizedTypeReference<List<Movie>> but why to make so complex
-		Movie movie =restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);
+		Movie movie =restTemplate.getForObject("http://movie-info-service/movies/"+rating.getMovieId(), Movie.class);
 		//put them all together
 		return new CatalogItem(movie.getName(), "Test", rating.getRating());
 		}).collect(Collectors.toList());
